@@ -7,7 +7,7 @@ Defina suas informações no application properties
 Para executar o container use o comando: docker-compose up -d
 Conecte ao banco de dados depois que o container for construído. Exemplo:
 
-Acesso ao POSTGRES usando Dbeaver:
+Acesso ao POSTGRES usando Dbeaver: <br/>
 ![image](https://github.com/user-attachments/assets/3dccea76-4714-4b8a-be39-547cb26a9ace)
 
 # Banco de Dados - Modelagem
