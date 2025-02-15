@@ -12,5 +12,5 @@ Acesso ao POSTGRES usando Dbeaver:
 )
 
 # Banco de Dados - Modelagem
-![image](![Captura de tela 2025-02-14 233819](https://github.com/user-attachments/assets/d036c02b-da96-45b6-a675-88f68b986613)
+[Captura de tela 2025-02-14 233819](https://github.com/user-attachments/assets/d036c02b-da96-45b6-a675-88f68b986613)
 )
