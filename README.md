@@ -8,9 +8,7 @@ Para executar o container use o comando: docker-compose up -d
 Conecte ao banco de dados depois que o container for construído. Exemplo:
 
 Acesso ao POSTGRES usando Dbeaver:
-![image](![db](https://github.com/user-attachments/assets/370e73f1-0aba-47c4-8019-98d5accb502e)
-)
+![image](https://github.com/user-attachments/assets/3dccea76-4714-4b8a-be39-547cb26a9ace)
 
 # Banco de Dados - Modelagem
-![image][Captura de tela 2025-02-14 233819](https://github.com/user-attachments/assets/d036c02b-da96-45b6-a675-88f68b986613)
-)
+![image](https://github.com/user-attachments/assets/f025d3b0-80ba-4ac2-a02c-596ab77f62a4)
