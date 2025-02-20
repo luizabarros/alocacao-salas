@@ -12,6 +12,21 @@ services:
     volumes: 
       - db:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - '5672:5672'  # Porta para comunicação com aplicações
+      - '15672:15672'  # Porta para o painel de gerenciamento
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+
 volumes:
   db:
+    driver: local
+  rabbitmq:
     driver: local

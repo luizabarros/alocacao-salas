@@ -31,6 +31,28 @@
 	</properties>
 	<dependencies>
 		<dependency>
+	    	<groupId>com.sendgrid</groupId>
+	    	<artifactId>sendgrid-java</artifactId>
+	    	<version>4.9.3</version>
+		</dependency>
+		<dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-starter-mail</artifactId>
+    	</dependency>
+    
+	   <dependency>
+ 	  		<groupId>com.auth0</groupId>
+   			<artifactId>java-jwt</artifactId>
+   			<version>4.4.0</version>
+ 	   </dependency>
+ 	   
+ 	   
+		<dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-amqp</artifactId>
+    	</dependency>
+    
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
@@ -42,6 +64,18 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-test</artifactId>
+		    <scope>test</scope>
+		</dependency>
+    
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,17 +88,31 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<repositories>
+    	<repository>
+        	<id>central</id>
+        	<url>https://repo.maven.apache.org/maven2</url>
+    	</repository>
+    	<repository>
+        	<id>jcenter</id>
+        	<url>https://jcenter.bintray.com</url>
+    	</repository>
+	</repositories>
+
 
 	<build>
 		<plugins>
