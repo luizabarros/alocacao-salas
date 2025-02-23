@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
@@ -26,17 +25,26 @@ public class SecurityConfigurations {
         return new BCryptPasswordEncoder();
     }
     
-    
     @Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http.csrf(csrf -> csrf.disable())
-	            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-	            .authorizeHttpRequests(req -> {
-	                req.requestMatchers("/professor/public/**").permitAll();
-	                req.anyRequest().authenticated();
-	            })
-	            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-	            .build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+            .csrf(csrf -> csrf.disable()) 
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(req -> {
 
-	}
+                req.requestMatchers(
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll();
+  
+                req.requestMatchers("/professor/public/**").permitAll();
+
+                req.anyRequest().authenticated();
+            })
+            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+    }
 }
