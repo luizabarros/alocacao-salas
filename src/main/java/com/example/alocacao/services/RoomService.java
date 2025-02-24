@@ -3,9 +3,9 @@ package com.example.alocacao.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.alocacao.dtos.SalaDTO;
-import com.example.alocacao.entities.Sala;
-import com.example.alocacao.repositories.SalaRepository;
+import com.example.alocacao.dtos.RoomDTO;
+import com.example.alocacao.entities.Room;
+import com.example.alocacao.repositories.RoomRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,28 +18,28 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Tag(name = "Salas", description = "Serviço para gerenciamento de salas") // Define um grupo no Swagger UI
-public class SalaService {
+@Tag(name = "Salas", description = "Serviço para gerenciamento de salas") 
+public class RoomService {
 
     @Autowired
-    private SalaRepository salaRepository;
+    private RoomRepository roomRepository;
 
     @Operation(summary = "Criar uma nova sala", description = "Cadastra uma nova sala no sistema.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Sala criada com sucesso"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Sala salvarSala(SalaDTO salaDTO) {
-        Sala sala = new Sala();
-        sala.setNome(salaDTO.getNome());
+    public Room saveRoom(RoomDTO roomDTO) {
+        Room room = new Room();
+        room.setName(roomDTO.getName());
 
-        return salaRepository.save(sala);
+        return roomRepository.save(room);
     }
 
     @Operation(summary = "Listar todas as salas", description = "Retorna uma lista com todas as salas cadastradas no sistema.")
     @ApiResponse(responseCode = "200", description = "Lista de salas retornada com sucesso")
-    public List<SalaDTO> listarSalas() {
-        return salaRepository.findAll().stream()
+    public List<RoomDTO> getAllRooms() {
+        return roomRepository.findAll().stream()
             .map(this::convertToDTO)
             .collect(Collectors.toList());
     }
@@ -50,8 +50,8 @@ public class SalaService {
         @ApiResponse(responseCode = "404", description = "Sala não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Optional<SalaDTO> buscarPorId(UUID id) {
-        return salaRepository.findById(id).map(this::convertToDTO);
+    public Optional<RoomDTO> getRoomById(UUID id) {
+        return roomRepository.findById(id).map(this::convertToDTO);
     }
 
     @Operation(summary = "Atualizar uma sala", description = "Atualiza os dados de uma sala existente.")
@@ -60,10 +60,10 @@ public class SalaService {
         @ApiResponse(responseCode = "404", description = "Sala não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Optional<Sala> atualizarSala(UUID id, SalaDTO novaSalaDTO) {
-        return salaRepository.findById(id).map(sala -> {
-            sala.setNome(novaSalaDTO.getNome());
-            return salaRepository.save(sala);
+    public Optional<Room> updateRoom(UUID id, RoomDTO newRoomDTO) {
+        return roomRepository.findById(id).map(room -> {
+        	room.setName(newRoomDTO.getName());
+            return roomRepository.save(room);
         });
     }
 
@@ -73,11 +73,11 @@ public class SalaService {
         @ApiResponse(responseCode = "404", description = "Sala não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public void deletarSala(UUID id) {
-        salaRepository.deleteById(id);
+    public void deleteRoom(UUID id) {
+        roomRepository.deleteById(id);
     }
 
-    private SalaDTO convertToDTO(Sala sala) {
-        return new SalaDTO(sala.getId(), sala.getNome());
+    private RoomDTO convertToDTO(Room room) {
+        return new RoomDTO(room.getId(), room.getName());
     }
 }

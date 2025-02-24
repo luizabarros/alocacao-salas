@@ -1,10 +1,18 @@
 package com.example.alocacao.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TokenDTO {
-	private String token;
-	
-	public TokenDTO(String token) {
+    
+    @JsonProperty("token")
+    private String token;
+    
+    @JsonProperty("isAdmin")
+    private boolean isAdmin;
+
+    public TokenDTO(String token, boolean isAdmin) {
         this.token = token;
+        this.isAdmin = isAdmin;
     }
 
     public String getToken() {
@@ -13,5 +21,13 @@ public class TokenDTO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }

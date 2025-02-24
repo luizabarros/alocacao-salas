@@ -9,9 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.alocacao.dtos.SalaDTO;
-import com.example.alocacao.entities.Sala;
-import com.example.alocacao.services.SalaService;
+import com.example.alocacao.dtos.RoomDTO;
+import com.example.alocacao.entities.Room;
+import com.example.alocacao.services.RoomService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,13 +19,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/salas")
+@RequestMapping("/rooms")
 @Secured("ROLE_PROFESSOR")
-@Tag(name = "Salas", description = "Gerenciamento das salas disponíveis") // Grupo no Swagger UI
-public class SalaController {
+@Tag(name = "Salas", description = "Gerenciamento das salas disponíveis")
+public class RoomController {
 
     @Autowired
-    private SalaService salaService;
+    private RoomService roomService;
 
     @PostMapping
     @Operation(summary = "Criar uma nova sala", description = "Cria uma nova sala informando o nome.")
@@ -34,16 +34,16 @@ public class SalaController {
         @ApiResponse(responseCode = "400", description = "Requisição inválida"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<Sala> criarSala(@RequestBody SalaDTO salaDTO) {
-        Sala novaSala = salaService.salvarSala(salaDTO);
-        return ResponseEntity.ok(novaSala);
+    public ResponseEntity<Room> saveRoom(@RequestBody RoomDTO roomDTO) {
+        Room newRoom = roomService.saveRoom(roomDTO);
+        return ResponseEntity.ok(newRoom);
     }
 
     @GetMapping
     @Operation(summary = "Listar todas as salas", description = "Retorna uma lista com todas as salas cadastradas no sistema.")
     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
-    public ResponseEntity<List<SalaDTO>> listarSalas() {
-        return ResponseEntity.ok(salaService.listarSalas());
+    public ResponseEntity<List<RoomDTO>> getAllRooms() {
+        return ResponseEntity.ok(roomService.getAllRooms());
     }
 
     @GetMapping("/{id}")
@@ -53,8 +53,8 @@ public class SalaController {
         @ApiResponse(responseCode = "404", description = "Sala não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<Optional<SalaDTO>> buscarSala(@PathVariable UUID id) {
-        return ResponseEntity.ok(salaService.buscarPorId(id));
+    public ResponseEntity<Optional<RoomDTO>> getRoomById(@PathVariable UUID id) {
+        return ResponseEntity.ok(roomService.getRoomById(id));
     }
 
     @PutMapping("/{id}")
@@ -65,8 +65,8 @@ public class SalaController {
         @ApiResponse(responseCode = "400", description = "Requisição inválida"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<Optional<Sala>> atualizarSala(@PathVariable UUID id, @RequestBody SalaDTO salaDTO) {
-        return ResponseEntity.ok(salaService.atualizarSala(id, salaDTO));
+    public ResponseEntity<Optional<Room>> updateRoom(@PathVariable UUID id, @RequestBody RoomDTO roomDTO) {
+        return ResponseEntity.ok(roomService.updateRoom(id, roomDTO));
     }
 
     @DeleteMapping("/{id}")
@@ -76,8 +76,8 @@ public class SalaController {
         @ApiResponse(responseCode = "404", description = "Sala não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<Void> deletarSala(@PathVariable UUID id) {
-        salaService.deletarSala(id);
+    public ResponseEntity<Void> deleteRoom(@PathVariable UUID id) {
+        roomService.deleteRoom(id);
         return ResponseEntity.noContent().build();
     }
 }

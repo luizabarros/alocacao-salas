@@ -1,6 +1,7 @@
 package com.example.alocacao.services;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,11 +10,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.alocacao.dtos.AulaDTO;
-import com.example.alocacao.entities.Aula;
-import com.example.alocacao.entities.Sala;
-import com.example.alocacao.repositories.AulaRepository;
-import com.example.alocacao.repositories.SalaRepository;
+import com.example.alocacao.dtos.LectureDTO;
+import com.example.alocacao.entities.Lecture;
+import com.example.alocacao.entities.Room;
+import com.example.alocacao.repositories.LectureRepository;
+import com.example.alocacao.repositories.RoomRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,13 +23,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Service
 @Tag(name = "Aulas", description = "Serviço para gerenciamento de alocações de aulas") // Define um grupo no Swagger
-public class AulaService {
+public class LectureService {
 
     @Autowired
-    private AulaRepository aulaRepository;
+    private LectureRepository lectureRepository;
 
     @Autowired
-    private SalaRepository salaRepository;
+    private RoomRepository roomRepository;
 
     @Operation(summary = "Criar uma nova aula", description = "Cadastra uma aula respeitando a disponibilidade da sala e os intervalos de 50 minutos.")
     @ApiResponses(value = {
@@ -36,32 +37,32 @@ public class AulaService {
         @ApiResponse(responseCode = "400", description = "Horário indisponível ou sala não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno")
     })
-    public Aula salvarAula(AulaDTO aulaDTO) {
-        Sala sala = salaRepository.findById(aulaDTO.getSalaId())
+    public Lecture saveLecture(LectureDTO lectureDTO) {
+        Room room = roomRepository.findById(lectureDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Sala não encontrada!"));
 
-        LocalDateTime horaInicioNovaAula = aulaDTO.getHoraInicio();
-        LocalDateTime horaFimNovaAula = horaInicioNovaAula.plusMinutes(aulaDTO.getDuracao());
+        LocalTime hourInitLecture = lectureDTO.getHourInit();
+        LocalTime hourEndLecture = hourInitLecture.plus(lectureDTO.getDuration());
 
-        boolean existeConflito = aulaRepository.existsBySalaIdAndHoraInicioBetween(
-                aulaDTO.getSalaId(), horaInicioNovaAula.minusMinutes(49), horaFimNovaAula);
+        boolean existsConflict = lectureRepository.existsByRoomIdAndHourInitBetween(
+                lectureDTO.getRoomId(), hourInitLecture.minusMinutes(49), hourEndLecture);
 
-        if (existeConflito) {
+        if (existsConflict) {
             throw new IllegalArgumentException("A sala já está ocupada nesse horário.");
         }
 
-        Aula aula = new Aula();
-        aula.setHoraInicio(horaInicioNovaAula);
-        aula.setDuracao(aulaDTO.getDuracao());
-        aula.setSala(sala);
+        Lecture lecture = new Lecture();
+        lecture.setHourInit(hourInitLecture);
+        lecture.setDuration(lectureDTO.getDuration());
+        lecture.setRoom(room);
 
-        return aulaRepository.save(aula);
+        return lectureRepository.save(lecture);
     }
 
     @Operation(summary = "Listar todas as aulas", description = "Retorna uma lista com todas as aulas cadastradas no sistema.")
     @ApiResponse(responseCode = "200", description = "Lista de aulas retornada com sucesso")
-    public List<AulaDTO> listarAulas() {
-        return aulaRepository.findAll().stream()
+    public List<LectureDTO> listLectures() {
+        return lectureRepository.findAll().stream()
             .map(this::convertToDTO)
             .collect(Collectors.toList());
     }
@@ -72,8 +73,8 @@ public class AulaService {
         @ApiResponse(responseCode = "404", description = "Aula não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Optional<AulaDTO> buscarPorId(UUID id) {
-        return aulaRepository.findById(id).map(this::convertToDTO);
+    public Optional<LectureDTO> getByLectureId(UUID id) {
+        return lectureRepository.findById(id).map(this::convertToDTO);
     }
 
     @Operation(summary = "Atualizar uma aula", description = "Atualiza os dados de uma aula existente, verificando se a nova alocação respeita os intervalos de 50 minutos.")
@@ -83,26 +84,26 @@ public class AulaService {
         @ApiResponse(responseCode = "404", description = "Aula não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Optional<Aula> atualizarAula(UUID id, AulaDTO novaAulaDTO) {
-        return aulaRepository.findById(id).map(aula -> {
+    public Optional<Lecture> updateLecture(UUID id, LectureDTO newLectureDTO) {
+        return lectureRepository.findById(id).map(lecture -> {
 
-            LocalDateTime novaHoraInicio = novaAulaDTO.getHoraInicio();
-            LocalDateTime novaHoraFim = novaHoraInicio.plusMinutes(novaAulaDTO.getDuracao());
+            LocalTime newHourInit = newLectureDTO.getHourInit();
+            LocalTime newHourEnd = newHourInit.plus(newLectureDTO.getDuration());
 
-            boolean conflito = aulaRepository.existsBySalaIdAndHoraInicioBetween(
-                    novaAulaDTO.getSalaId(), novaHoraInicio.minusMinutes(49), novaHoraFim);
+            boolean existsConflict = lectureRepository.existsByRoomIdAndHourInitBetween(
+            		newLectureDTO.getRoomId(), newHourInit.minusMinutes(49), newHourEnd);
 
-            if (conflito) {
+            if (existsConflict) {
                 throw new IllegalArgumentException("A sala já está ocupada nesse horário.");
             }
 
-            aula.setHoraInicio(novaHoraInicio);
-            aula.setDuracao(novaAulaDTO.getDuracao());
-            aula.setDiaDaSemana(novaAulaDTO.getDiaDaSemana());
+            lecture.setHourInit(newHourInit);
+            lecture.setDuration(newLectureDTO.getDuration());
+            lecture.setDayOfWeek(newLectureDTO.getDayOfWeek());
 
-            salaRepository.findById(novaAulaDTO.getSalaId()).ifPresent(aula::setSala);
+            roomRepository.findById(newLectureDTO.getRoomId()).ifPresent(lecture::setRoom);
 
-            return aulaRepository.save(aula);
+            return lectureRepository.save(lecture);
         });
     }
 
@@ -112,21 +113,21 @@ public class AulaService {
         @ApiResponse(responseCode = "404", description = "Aula não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public void deletarAula(UUID id) {
-        if (!aulaRepository.existsById(id)) {
+    public void deleteLecture(UUID id) {
+        if (!lectureRepository.existsById(id)) {
             throw new IllegalArgumentException("Aula não encontrada!");
         }
-        aulaRepository.deleteById(id);
+        lectureRepository.deleteById(id);
     }
 
-    private AulaDTO convertToDTO(Aula aula) {
-        return new AulaDTO(
-            aula.getId(),
-            aula.getDisciplina() != null ? aula.getDisciplina().getId() : null,
-            aula.getSala().getId(),
-            aula.getDiaDaSemana(),
-            aula.getHoraInicio(),
-            aula.getDuracao()
+    private LectureDTO convertToDTO(Lecture lecture) {
+        return new LectureDTO(
+            lecture.getId(),
+            lecture.getSubject() != null ? lecture.getSubject().getId() : null,
+            lecture.getRoom().getId(),
+            lecture.getDayOfWeek(),
+            lecture.getHourInit(),
+            lecture.getDuration()
         );
     }
 } 

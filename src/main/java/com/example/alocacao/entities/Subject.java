@@ -13,15 +13,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Disciplina {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class Subject {
+	@Id
+    @GeneratedValue
     @UuidGenerator
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
-    private String nome;
-    private String codigoTurma;  
+    private String name;
+    
+    @Column(name = "code_class")
+    private String codClass;  
     
     @ManyToOne
     @JoinColumn(name = "professor_id", nullable = true)  	
@@ -35,20 +37,20 @@ public class Disciplina {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getCodigoTurma() {
-		return codigoTurma;
+	public String getCodClass() {
+		return codClass;
 	}
 
-	public void setCodigoTurma(String codigoTurma) {
-		this.codigoTurma = codigoTurma;
+	public void setCodClass(String codClass) {
+		this.codClass = codClass;
 	}
 
 	public Professor getProfessor() {

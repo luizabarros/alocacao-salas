@@ -1,11 +1,13 @@
 package com.example.alocacao.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.alocacao.dtos.LoginDTO;
 import com.example.alocacao.dtos.ProfessorDTO;
@@ -24,7 +26,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Service
-@Tag(name = "Professores", description = "Serviço para gerenciamento de professores e autenticação") // Define o grupo no Swagger
+@Tag(name = "Professores", description = "Serviço para gerenciamento de professores e autenticação") 
 public class ProfessorService {
 
     @Autowired
@@ -57,9 +59,10 @@ public class ProfessorService {
         String encryptedPassword = passwordEncoder.encode(professorRegisterDTO.getPassword());
 
         Professor professor = new Professor();
-        professor.setNome(professorRegisterDTO.getName());
+        professor.setName(professorRegisterDTO.getName());
         professor.setEmail(professorRegisterDTO.getEmail());
-        professor.setSenha(encryptedPassword); 
+        professor.setIsAdmin(professorRegisterDTO.getIsAdmin());
+        professor.setProfessorPassword(encryptedPassword); 
         professor.setConfirmed(false);
 
         Role roleProfessor = roleRepository.findByRole("ROLE_PROFESSOR")
@@ -72,11 +75,15 @@ public class ProfessorService {
         professor.setRoles(List.of(roleProfessor));
 
         Professor savedProfessor = professorRepository.save(professor);
+        
+        emailProducer.sendEmail(savedProfessor.getEmail());
+        savedProfessor.setConfirmed(true);
 
         return new ProfessorDTO(
             savedProfessor.getId(),
-            savedProfessor.getNome(),
+            savedProfessor.getName(),
             savedProfessor.getEmail(),
+            savedProfessor.getIsAdmin(),
             savedProfessor.isConfirmed(),
             savedProfessor.getRoles().stream()
                 .map(role -> new RoleDTO(role.getId(), role.getRole()))
@@ -91,29 +98,37 @@ public class ProfessorService {
         @ApiResponse(responseCode = "400", description = "E-mail ou senha incorretos"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    
     public TokenDTO login(LoginDTO loginDTO) {
-        System.out.println("📩 Recebendo tentativa de login para: " + loginDTO.getEmail());
-
         Professor professor = professorRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> {
-                    System.out.println("❌ Usuário não encontrado: " + loginDTO.getEmail());
                     return new RuntimeException("Professor não encontrado");
                 });
+        
+        boolean correctPassword = passwordEncoder.matches(loginDTO.getPassword(), professor.getProfessorPassword());
 
-        System.out.println("✅ Professor encontrado: " + professor.getEmail());
-
-        boolean senhaCorreta = passwordEncoder.matches(loginDTO.getPassword(), professor.getSenha());
-        System.out.println("🔑 Senha correta? " + senhaCorreta);
-
-        if (!senhaCorreta) {
+        if (!correctPassword) {
             throw new RuntimeException("Senha incorreta");
         }
+        
 
         String token = jwtUtil.generateToken(loginDTO.getEmail());
-        System.out.println("🎟 Token gerado: " + token);
-
-        return new TokenDTO(token);
+        
+        boolean isAdmin = professor.getIsAdmin();
+        
+        return new TokenDTO(token, isAdmin);
+    }
+    
+    @Operation(summary = "Listar professor", description = "Lista professores.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso."),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
+    public List<ProfessorDTO> getAllProfessors() {
+        List<Professor> professors = professorRepository.findAll();
+        return professors.stream()
+                .map(professor -> new ProfessorDTO(professor.getId(), professor.getName(), professor.getEmail(), professor.isConfirmed(), professor.getIsAdmin(), null))
+                .collect(Collectors.toList());
     }
 
 }

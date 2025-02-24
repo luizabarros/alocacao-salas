@@ -1,6 +1,9 @@
 package com.example.alocacao.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +47,17 @@ public class ProfessorController {
     })
     public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO loginRequest) {
         return ResponseEntity.ok(professorService.login(loginRequest));
+    }
+    
+    @GetMapping("/private/all")
+    @Operation(summary = "Listar professor", description = "Lista professores.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso."),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
+    public ResponseEntity<List<ProfessorDTO>> getAllProfessors() {
+        List<ProfessorDTO> professors = professorService.getAllProfessors();
+        return ResponseEntity.ok(professors);
     }
 }

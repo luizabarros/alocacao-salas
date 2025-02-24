@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.example.alocacao.repositories.ProfessorRepository;
 
 @Service
-public class AutenticacaoService implements UserDetailsService {
+public class AuthenticationService implements UserDetailsService {
 
     @Autowired
     private ProfessorRepository professorRepository;

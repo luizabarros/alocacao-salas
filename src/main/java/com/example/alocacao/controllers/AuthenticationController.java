@@ -7,15 +7,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.alocacao.dtos.DadosAutenticacao;
+import com.example.alocacao.dtos.AuthenticationData;
 import com.example.alocacao.dtos.TokenDTO;
 import com.example.alocacao.entities.Professor;
 import com.example.alocacao.services.JWTService;
 
 @RestController
 @RequestMapping("/login")
-//@Secured("ROLE_PROFESSOR")
-public class AutenticacaoController {
+public class AuthenticationController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -24,17 +23,19 @@ public class AutenticacaoController {
     private JWTService tokenService;
 
     @PostMapping
-    public ResponseEntity<TokenDTO> efetuarLogin(@RequestBody DadosAutenticacao dados) {
+    public ResponseEntity<TokenDTO> login(@RequestBody AuthenticationData data) {
         var authenticationToken = new UsernamePasswordAuthenticationToken(
-            dados.login(),  
-            dados.senha()   
+        		data.login(),  
+        		data.password()   
         );
-
+        
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         Professor professor = (Professor) authentication.getPrincipal();
+        
         String jwt = tokenService.generateToken(professor.getEmail());
+        boolean isAdmin = professor.getIsAdmin();
 
-        return ResponseEntity.ok(new TokenDTO(jwt));
+        return ResponseEntity.ok(new TokenDTO(jwt, isAdmin));
     }
 
 }
