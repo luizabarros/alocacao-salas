@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.alocacao.entities.Professor;
 import com.example.alocacao.repositories.ProfessorRepository;
 import com.example.alocacao.services.JWTService;
 
@@ -16,25 +17,61 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 @Component
-public class SecurityFilter extends OncePerRequestFilter{
+public class SecurityFilter extends OncePerRequestFilter {
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		System.out.println("FILTRO CHAMADO");	
-		filterChain.doFilter(request, response);
-	}
-	
-	public String recuperarToken(HttpServletRequest request) {
-        var token = request.getHeader("Authorization");
-        if (token == null || token.isEmpty() || !token.startsWith("Bearer ")) {
-            return null;
+    @Autowired
+    private JWTService tokenService;
+
+    @Autowired
+    private ProfessorRepository professorRepository;
+
+    public SecurityFilter(JWTService tokenService, ProfessorRepository professorRepository) {
+        this.tokenService = tokenService;
+        this.professorRepository = professorRepository;
+    }
+    
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        System.out.println("🔍 Requisição recebida para: " + request.getRequestURI()); // 🔥 Log para depuração
+
+        String requestPath = request.getServletPath();
+
+        // Permite acesso ao login e ao registro de professores
+        if (requestPath.equals("/login") || requestPath.startsWith("/professor/public/")) {
+            System.out.println("✅ Acesso permitido sem autenticação para: " + requestPath);
+            filterChain.doFilter(request, response);
+            return;
         }
-        return token.replace("Bearer ", "");
+
+        String token = recuperarToken(request);
+
+        if (token != null) {
+            System.out.println("🔑 Token encontrado, validando...");
+
+            String login = tokenService.getSubject(token);
+            Professor professor = professorRepository.findByEmail(login)
+                    .orElseThrow(() -> new RuntimeException("❌ Usuário não encontrado"));
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(professor, null, professor.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            System.out.println("⚠️ Nenhum token encontrado na requisição.");
+        }
+
+        filterChain.doFilter(request, response);
     }
 
-
+    private String recuperarToken(HttpServletRequest request) {
+        var authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7); 
+        }
+        return null;
+    }
 }
+
