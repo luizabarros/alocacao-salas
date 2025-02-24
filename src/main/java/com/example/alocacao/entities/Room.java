@@ -3,19 +3,23 @@ package com.example.alocacao.entities;
 import jakarta.persistence.*;
 import java.util.UUID;
 
-@Entity
-public class Sala {
+import org.hibernate.annotations.UuidGenerator;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+@Entity
+public class Room {
+
+	@Id
+    @GeneratedValue
+    @UuidGenerator
+    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
-    private String nome;
+    private String name;
 
-    public Sala() {}
+    public Room() {}
 
-    public Sala(String nome) {
-        this.nome = nome;
+    public Room(String name) {
+        this.name = name;
     }
 
 	public UUID getId() {
@@ -26,12 +30,12 @@ public class Sala {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String name) {
+		this.name = name;
 	}
     
     

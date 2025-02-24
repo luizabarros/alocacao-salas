@@ -1,6 +1,6 @@
 package com.example.alocacao.entities;
 
-public enum DiaDaSemana {
+public enum DayOfWeek {
     SEGUNDA_FEIRA,
     TERÇA_FEIRA,
     QUARTA_FEIRA,

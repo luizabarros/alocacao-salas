@@ -2,15 +2,15 @@ package com.example.alocacao.dtos;
 
 import java.util.UUID;
 	
-public class SalaDTO {
+public class RoomDTO {
     private UUID id;
-    private String nome;
+    private String name;
 
-    public SalaDTO() {}
+    public RoomDTO() {}
 
-    public SalaDTO(UUID id, String nome) {
+    public RoomDTO(UUID id, String name) {
         this.id = id;
-        this.nome = nome;
+        this.name = name;
     }
 
 	public UUID getId() {
@@ -21,12 +21,12 @@ public class SalaDTO {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String name) {
+		this.name = name;
 	}
     
 }

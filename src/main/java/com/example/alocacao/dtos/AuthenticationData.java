@@ -1,6 +1,6 @@
 package com.example.alocacao.dtos;
 
-public record DadosAutenticacao(String login, String senha) {
+public record AuthenticationData(String login, String password) {
 
 
 

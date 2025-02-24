@@ -5,11 +5,11 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.alocacao.entities.Disciplina;
+import com.example.alocacao.entities.Subject;
 
 @Repository
-public interface DisciplinaRepository extends JpaRepository<Disciplina, UUID> {
+public interface SubjectRepository extends JpaRepository<Subject, UUID> {
 
-	boolean existsByNomeAndCodigoTurma(String nome, String codigoTurma);
+	boolean existsByNameAndCodClass(String name, String codClass);
 
 }

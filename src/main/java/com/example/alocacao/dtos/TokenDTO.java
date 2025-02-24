@@ -2,16 +2,10 @@ package com.example.alocacao.dtos;
 
 public class TokenDTO {
 	private String token;
-	
-	public TokenDTO(String token) {
-        this.token = token;
-    }
+    private boolean isAdmin;
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
+	public TokenDTO(String token, boolean isAdmin) {
         this.token = token;
+        this.isAdmin = isAdmin;
     }
 }

@@ -5,25 +5,28 @@ import java.util.UUID;
 
 public class ProfessorDTO {
     private UUID id;
-    private String nome;
+    private String name;
     private String email;
+    private boolean isAdmin;
     private boolean confirmed;
     private List<RoleDTO> roles;
 
-    public ProfessorDTO(UUID id, String nome, String email, String senha, boolean confirmed, List<RoleDTO> roles) {
+    public ProfessorDTO(UUID id, String name, String email, String senha, boolean confirmed, boolean isAdmin, List<RoleDTO> roles) {
         this.id = id;
-        this.nome = nome;
+        this.name = name;
         this.email = email;
         this.confirmed = confirmed;
         this.roles = roles;
+        this.isAdmin = isAdmin;
     }
 
-    public ProfessorDTO(UUID id, String nome, String email, boolean confirmed, List<RoleDTO> roles) {
+    public ProfessorDTO(UUID id, String name, String email, boolean confirmed, boolean isAdmin, List<RoleDTO> roles) {
         this.id = id;
-        this.nome = nome;
+        this.name = name;
         this.email = email;
         this.confirmed = confirmed;
         this.roles = roles;
+        this.isAdmin = isAdmin;
     }
 
     public UUID getId() {
@@ -34,12 +37,12 @@ public class ProfessorDTO {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -65,5 +68,13 @@ public class ProfessorDTO {
     public void setRoles(List<RoleDTO> roles) {
         this.roles = roles;
     }
+
+	public boolean getIsAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 }
 

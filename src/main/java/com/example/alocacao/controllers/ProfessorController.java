@@ -50,6 +50,12 @@ public class ProfessorController {
     }
     
     @GetMapping("/private/all")
+    @Operation(summary = "Listar professor", description = "Lista professores.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso."),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     public ResponseEntity<List<ProfessorDTO>> getAllProfessors() {
         List<ProfessorDTO> professors = professorService.getAllProfessors();
         return ResponseEntity.ok(professors);

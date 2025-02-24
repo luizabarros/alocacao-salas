@@ -20,10 +20,13 @@ public class Professor implements UserDetails {
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
-    private String nome;
+    private String name;
     private String email;
-    private String senha; 
+    private String password; 
     private boolean confirmed;
+    
+    @Column(name = "is_admin")
+    private boolean isAdmin;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -34,13 +37,21 @@ public class Professor implements UserDetails {
     private List<Role> roles = new ArrayList<>();
 
     public Professor() {}
-
-    public String getSenha() {
-        return senha;
+    
+    public boolean getIsAdmin() {
+        return isAdmin;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
+    public String getProfessorPassword() {
+        return password;
+    }
+
+    public void setProfessorPassword(String password) {
+        this.password = password;
     }
 
     public boolean isConfirmed() {
@@ -58,7 +69,7 @@ public class Professor implements UserDetails {
 
     @Override
     public String getPassword() {
-        return senha; 
+        return password; 
     }
 
     @Override
@@ -94,12 +105,12 @@ public class Professor implements UserDetails {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

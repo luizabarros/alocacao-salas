@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.alocacao.dtos.DisciplinaDTO;
+import com.example.alocacao.dtos.SubjectDTO;
 import com.example.alocacao.dtos.ProfessorDTO;
 import com.example.alocacao.dtos.RoleDTO;
-import com.example.alocacao.entities.Disciplina;
+import com.example.alocacao.entities.Subject;
 import com.example.alocacao.entities.Professor;
-import com.example.alocacao.repositories.DisciplinaRepository;
+import com.example.alocacao.repositories.SubjectRepository;
 import com.example.alocacao.repositories.ProfessorRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,10 +23,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Service
 @Tag(name = "Disciplinas", description = "Serviço para gerenciamento de disciplinas")
-public class DisciplinaService {
+public class SubjectService {
 
     @Autowired
-    private DisciplinaRepository disciplinaRepository;
+    private SubjectRepository subjectRepository;
 
     @Autowired
     private ProfessorRepository professorRepository;
@@ -37,32 +37,31 @@ public class DisciplinaService {
         @ApiResponse(responseCode = "400", description = "Disciplina já existente ou professor não encontrado"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Disciplina salvarDisciplina(DisciplinaDTO disciplinaDTO) {
-        boolean existeDisciplina = disciplinaRepository.existsByNomeAndCodigoTurma(
-                disciplinaDTO.getNome(), disciplinaDTO.getCodigoTurma());
+    public Subject saveSubject(SubjectDTO subjectDTO) {
+        boolean existsSubject = subjectRepository.existsByNameAndCodClass(
+                subjectDTO.getName(), subjectDTO.getCodClass());
 
-        if (existeDisciplina) {
+        if (existsSubject) {
             throw new IllegalArgumentException("Já existe uma disciplina com esse nome e código de turma.");
         }
 
-        Disciplina disciplina = new Disciplina();
-        disciplina.setNome(disciplinaDTO.getNome());
-        disciplina.setCodigoTurma(disciplinaDTO.getCodigoTurma());
+        Subject subject = new Subject();
+        subject.setName(subjectDTO.getName());
+        subject.setCodClass(subjectDTO.getCodClass());
 
-        // Verifica se o professor foi informado e busca no banco
-        if (disciplinaDTO.getProfessorId() != null) {
-            Professor professor = professorRepository.findById(disciplinaDTO.getProfessorId())
+        if (subjectDTO.getProfessorId() != null) {
+            Professor professor = professorRepository.findById(subjectDTO.getProfessorId())
                 .orElse(null);
 
             if (professor != null) {
-                disciplina.setProfessor(professor);
+            	subject.setProfessor(professor);
             } else {
                 System.out.println("⚠️ Professor não encontrado, a disciplina será salva sem professor.");
             }
         }
 
 
-        return disciplinaRepository.save(disciplina);
+        return subjectRepository.save(subject);
     }
 
 
@@ -72,21 +71,21 @@ public class DisciplinaService {
         @ApiResponse(responseCode = "404", description = "Disciplina ou professor não encontrado"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Disciplina atualizarProfessor(UUID disciplinaId, UUID professorId) {
-        Disciplina disciplina = disciplinaRepository.findById(disciplinaId)
+    public Subject updateSubjectProfessor(UUID subjectId, UUID professorId) {
+        Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new IllegalArgumentException("Disciplina não encontrada!"));
 
         Professor professor = professorRepository.findById(professorId)
                 .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado!"));
 
-        disciplina.setProfessor(professor);
-        return disciplinaRepository.save(disciplina);
+        subject.setProfessor(professor);
+        return subjectRepository.save(subject);
     }
 
     @Operation(summary = "Listar todas as disciplinas", description = "Retorna uma lista com todas as disciplinas cadastradas no sistema.")
     @ApiResponse(responseCode = "200", description = "Lista de disciplinas retornada com sucesso")
-    public List<DisciplinaDTO> listarDisciplinas() {
-        return disciplinaRepository.findAll().stream()
+    public List<SubjectDTO> listSubjects() {
+        return subjectRepository.findAll().stream()
             .map(this::convertToDTO)
             .collect(Collectors.toList());
     }
@@ -97,8 +96,8 @@ public class DisciplinaService {
         @ApiResponse(responseCode = "404", description = "Disciplina não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Optional<DisciplinaDTO> buscarPorId(UUID id) {
-        return disciplinaRepository.findById(id).map(this::convertToDTO);
+    public Optional<SubjectDTO> getSubjectById(UUID id) {
+        return subjectRepository.findById(id).map(this::convertToDTO);
     }
 
     @Operation(summary = "Atualizar uma disciplina", description = "Atualiza os dados de uma disciplina existente.")
@@ -107,25 +106,24 @@ public class DisciplinaService {
         @ApiResponse(responseCode = "404", description = "Disciplina não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Optional<Disciplina> atualizarDisciplina(UUID id, DisciplinaDTO novaDisciplinaDTO) {
-        Optional<Disciplina> optionalDisciplina = disciplinaRepository.findById(id);
+    public Optional<Subject> updateSubject(UUID id, SubjectDTO newSubjectDTO) {
+        Optional<Subject> optionalDisc = subjectRepository.findById(id);
 
-        if (optionalDisciplina.isEmpty()) {
+        if (optionalDisc.isEmpty()) {
             return Optional.empty();
         }
 
-        Disciplina disciplina = optionalDisciplina.get();
-        disciplina.setNome(novaDisciplinaDTO.getNome());
-        disciplina.setCodigoTurma(novaDisciplinaDTO.getCodigoTurma());
+        Subject subject = optionalDisc.get();
+        subject.setName(newSubjectDTO.getName());
+        subject.setCodClass(newSubjectDTO.getCodClass());
 
-        // Atualiza professor apenas se foi informado
-        if (novaDisciplinaDTO.getProfessorId() != null) {
-            Professor professor = professorRepository.findById(novaDisciplinaDTO.getProfessorId())
+        if (newSubjectDTO.getProfessorId() != null) {
+            Professor professor = professorRepository.findById(newSubjectDTO.getProfessorId())
                 .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado!"));
-            disciplina.setProfessor(professor);
+            subject.setProfessor(professor);
         }
 
-        return Optional.of(disciplinaRepository.save(disciplina));
+        return Optional.of(subjectRepository.save(subject));
     }
 
 
@@ -135,22 +133,22 @@ public class DisciplinaService {
         @ApiResponse(responseCode = "404", description = "Disciplina não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public boolean deletarDisciplina(UUID id) {
-        if (disciplinaRepository.existsById(id)) {
-            disciplinaRepository.deleteById(id);
+    public boolean deleteSubject(UUID id) {
+        if (subjectRepository.existsById(id)) {
+            subjectRepository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    private DisciplinaDTO convertToDTO(Disciplina disciplina) {
-        UUID professorId = (disciplina.getProfessor() != null) ? disciplina.getProfessor().getId() : null;
+    private SubjectDTO convertToDTO(Subject subject) {
+        UUID professorId = (subject.getProfessor() != null) ? subject.getProfessor().getId() : null;
 
-        return new DisciplinaDTO(
-            disciplina.getId(),
-            disciplina.getNome(),
-            disciplina.getCodigoTurma(),
-            professorId // Agora passamos apenas o UUID do professor
+        return new SubjectDTO(
+    		subject.getId(),
+    		subject.getName(),
+    		subject.getCodClass(),
+            professorId
         );
     }
 

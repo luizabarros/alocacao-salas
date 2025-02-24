@@ -9,9 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.alocacao.dtos.DisciplinaDTO;
-import com.example.alocacao.entities.Disciplina;
-import com.example.alocacao.services.DisciplinaService;
+import com.example.alocacao.dtos.SubjectDTO;
+import com.example.alocacao.entities.Subject;
+import com.example.alocacao.services.SubjectService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,10 +22,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/disciplinas")
 @Secured("ROLE_PROFESSOR")
 @Tag(name = "Disciplinas", description = "Gerenciamento das disciplinas")
-public class DisciplinaController {
+public class SubjectController {
 
     @Autowired
-    private DisciplinaService disciplinaService;
+    private SubjectService subjectService;
 
     @PostMapping
     @Operation(summary = "Criar uma nova disciplina", description = "Cadastra uma disciplina identificada pelo nome e código da turma, com professor opcional.")
@@ -34,10 +34,10 @@ public class DisciplinaController {
         @ApiResponse(responseCode = "400", description = "Disciplina já existente ou professor não encontrado"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<?> criarDisciplina(@RequestBody DisciplinaDTO disciplinaDTO) {
+    public ResponseEntity<?> saveSubject(@RequestBody SubjectDTO subjectDTO) {
         try {
-            Disciplina novaDisciplina = disciplinaService.salvarDisciplina(disciplinaDTO);
-            return ResponseEntity.status(201).body(novaDisciplina);
+            Subject newSubject = subjectService.saveSubject(subjectDTO);
+            return ResponseEntity.status(201).body(newSubject);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -50,10 +50,10 @@ public class DisciplinaController {
         @ApiResponse(responseCode = "404", description = "Disciplina ou professor não encontrado"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<?> atualizarProfessor(@PathVariable UUID id, @PathVariable UUID professorId) {
+    public ResponseEntity<?> updateSubjectProfessor(@PathVariable UUID id, @PathVariable UUID professorId) {
         try {
-            Disciplina disciplinaAtualizada = disciplinaService.atualizarProfessor(id, professorId);
-            return ResponseEntity.ok(disciplinaAtualizada);
+            Subject subjectProfessorUpdated = subjectService.updateSubjectProfessor(id, professorId);
+            return ResponseEntity.ok(subjectProfessorUpdated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }
@@ -62,9 +62,9 @@ public class DisciplinaController {
     @GetMapping
     @Operation(summary = "Listar todas as disciplinas", description = "Retorna uma lista com todas as disciplinas cadastradas no sistema.")
     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
-    public ResponseEntity<List<DisciplinaDTO>> listarDisciplinas() {
-        List<DisciplinaDTO> disciplinas = disciplinaService.listarDisciplinas();
-        return ResponseEntity.ok(disciplinas);
+    public ResponseEntity<List<SubjectDTO>> listSubjects() {
+        List<SubjectDTO> subjects = subjectService.listSubjects();
+        return ResponseEntity.ok(subjects);
     }
 
     @GetMapping("/{id}")
@@ -74,8 +74,8 @@ public class DisciplinaController {
         @ApiResponse(responseCode = "404", description = "Disciplina não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<?> buscarDisciplina(@PathVariable UUID id) {
-        Optional<DisciplinaDTO> disciplinaOpt = disciplinaService.buscarPorId(id);
+    public ResponseEntity<?> getSubjectById(@PathVariable UUID id) {
+        Optional<SubjectDTO> disciplinaOpt = subjectService.getSubjectById(id);
         if (disciplinaOpt.isPresent()) {
             return ResponseEntity.ok(disciplinaOpt.get());
         } else {
@@ -91,10 +91,10 @@ public class DisciplinaController {
         @ApiResponse(responseCode = "400", description = "Requisição inválida"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<?> atualizarDisciplina(@PathVariable UUID id, @RequestBody DisciplinaDTO disciplinaDTO) {
-        Optional<Disciplina> disciplinaAtualizada = disciplinaService.atualizarDisciplina(id, disciplinaDTO);
-        if (disciplinaAtualizada.isPresent()) {
-            return ResponseEntity.ok(disciplinaAtualizada.get());
+    public ResponseEntity<?> updateSubject(@PathVariable UUID id, @RequestBody SubjectDTO subjectDTO) {
+        Optional<Subject> updatedSubject = subjectService.updateSubject(id, subjectDTO);
+        if (updatedSubject.isPresent()) {
+            return ResponseEntity.ok(updatedSubject.get());
         } else {
             return ResponseEntity.status(404).body("Disciplina não encontrada");
         }
@@ -107,8 +107,8 @@ public class DisciplinaController {
         @ApiResponse(responseCode = "404", description = "Disciplina não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<?> deletarDisciplina(@PathVariable UUID id) {
-        boolean deleted = disciplinaService.deletarDisciplina(id);
+    public ResponseEntity<?> deleteSubject(@PathVariable UUID id) {
+        boolean deleted = subjectService.deleteSubject(id);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {

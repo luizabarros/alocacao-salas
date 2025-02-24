@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.alocacao.entities.Sala;
+import com.example.alocacao.entities.Room;
 
-public interface SalaRepository extends JpaRepository<Sala, UUID> {
+public interface RoomRepository extends JpaRepository<Room, UUID> {
 
 }

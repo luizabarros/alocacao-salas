@@ -4,62 +4,56 @@ import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class DisciplinaDTO {
+public class SubjectDTO {
 
     @Schema(description = "Identificador único da disciplina", example = "550e8400-e29b-41d4-a716-446655440000")
     private UUID id;
 
     @Schema(description = "Nome da disciplina", example = "Matemática")
-    private String nome;
+    private String name; 
 
     @Schema(description = "Código da turma", example = "MAT101")
-    private String codigoTurma;
+    private String codClass; 
 
-    @Schema(description = "Professor associado à disciplina (opcional)")
-    private UUID professorId; 
+    @Schema(description = "Identificador do professor associado à disciplina (opcional)", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID professorId;
     
-//    public DisciplinaDTO() {}
-    	
-    public DisciplinaDTO(UUID id, String nome, String codigoTurma, UUID professorId) {
+    public SubjectDTO(UUID id, String name, String codClass, UUID professorId) {
         this.id = id;
-        this.nome = nome;
-        this.codigoTurma = codigoTurma;
-        this.professorId = professorId; 
+        this.name = name;
+        this.codClass = codClass;
+        this.professorId = professorId;
     }
 
+    public UUID getId() {
+        return id;
+    }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-	public UUID getId() {
-		return id;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public String getCodClass() {
+        return codClass;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public void setCodClass(String codClass) {
+        this.codClass = codClass;
+    }
 
-	public String getCodigoTurma() {
-		return codigoTurma;
-	}
+    public UUID getProfessorId() {
+        return professorId;
+    }
 
-	public void setCodigoTurma(String codigoTurma) {
-		this.codigoTurma = codigoTurma;
-	}
-
-	public UUID getProfessorId() {
-		return professorId;
-	}
-
-	public void setProfessorId(UUID professorId) {
-		this.professorId = professorId;
-	}
-
-    
+    public void setProfessorId(UUID professorId) {
+        this.professorId = professorId;
+    }
 }

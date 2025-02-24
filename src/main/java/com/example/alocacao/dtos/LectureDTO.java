@@ -1,89 +1,75 @@
 package com.example.alocacao.dtos;
 
-import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.UUID;
 
-import com.example.alocacao.entities.DiaDaSemana;
+import com.example.alocacao.entities.DayOfWeek;
 
-public class AulaDTO {
+public class LectureDTO {
     private UUID id;
-    private UUID disciplinaId;
-    private UUID salaId;
-    private DiaDaSemana diaDaSemana;
-    private LocalDateTime horaInicio;
-    private int duracao;
+    private UUID subjectId;
+    private UUID roomId;
+    private DayOfWeek dayOfWeek;
+    private LocalTime hourInit;
+    private Duration duration;
 
-    public AulaDTO() {}
+    public LectureDTO() {}
 
-
-    public AulaDTO(UUID id, UUID disciplinaId, UUID salaId, DiaDaSemana diaDaSemana, LocalDateTime horaInicio, int duracao) {
+    public LectureDTO(UUID id, UUID subjectId, UUID roomId, DayOfWeek dayOfWeek, LocalTime hourInit, Duration duration) {
         this.id = id;
-        this.disciplinaId = disciplinaId;
-        this.salaId = salaId;
-        this.diaDaSemana = diaDaSemana;
-        this.horaInicio = horaInicio;
-        this.duracao = duracao;
+        this.subjectId = subjectId;
+        this.roomId = roomId;
+        this.dayOfWeek = dayOfWeek;
+        this.hourInit = hourInit;
+        this.duration = duration;
     }
 
+    public UUID getId() {
+        return id;
+    }
 
-	public UUID getId() {
-		return id;
-	}
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
+    public UUID getSubjectId() {
+        return subjectId;
+    }
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
+    public void setSubjectId(UUID subjectId) {
+        this.subjectId = subjectId;
+    }
 
+    public UUID getRoomId() {
+        return roomId;
+    }
 
-	public UUID getDisciplinaId() {
-		return disciplinaId;
-	}
+    public void setRoomId(UUID roomId) {
+        this.roomId = roomId;
+    }
 
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
 
-	public void setDisciplinaId(UUID disciplinaId) {
-		this.disciplinaId = disciplinaId;
-	}
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
 
+    public LocalTime getHourInit() {
+        return hourInit;
+    }
 
-	public UUID getSalaId() {
-		return salaId;
-	}
+    public void setHourInit(LocalTime hourInit) {
+        this.hourInit = hourInit;
+    }
 
+    public Duration getDuration() {
+        return duration;
+    }
 
-	public void setSalaId(UUID salaId) {
-		this.salaId = salaId;
-	}
-
-
-	public DiaDaSemana getDiaDaSemana() {
-		return diaDaSemana;
-	}
-
-
-	public void setDiaDaSemana(DiaDaSemana diaDaSemana) {
-		this.diaDaSemana = diaDaSemana;
-	}
-
-
-	public LocalDateTime getHoraInicio() {
-		return horaInicio;
-	}
-
-
-	public void setHoraInicio(LocalDateTime horaInicio) {
-		this.horaInicio = horaInicio;
-	}
-
-
-	public int getDuracao() {
-		return duracao;
-	}
-
-
-	public void setDuracao(int duracao) {
-		this.duracao = duracao;
-	}
-    
-    
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
 }

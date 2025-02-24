@@ -1,87 +1,88 @@
 package com.example.alocacao.entities;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Duration;
 import java.util.UUID;
 
-@Entity
-public class Aula {
+import org.hibernate.annotations.UuidGenerator;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+@Entity
+public class Lecture {
+
+	@Id
+    @GeneratedValue
+    @UuidGenerator
+    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "disciplina_id", nullable = false)
-    private Disciplina disciplina;
+    @JoinColumn(name = "subject_id", nullable = false)
+    private Subject subject;
 
     @ManyToOne
-    @JoinColumn(name = "sala_id", nullable = false)
-    private Sala sala;
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @Enumerated(EnumType.STRING) 
-    private DiaDaSemana diaDaSemana;
+    @Column(name = "day_of_week")
+    private DayOfWeek dayOfWeek;
 
-    private LocalDateTime horaInicio;
-    private int duracao;
+    @Column(name = "hour_init")
+    private LocalTime hourInit;
+    private Duration duration;
 
-    public Aula() {}
+    public Lecture() {}
 
-    public Aula(Disciplina disciplina, Sala sala, DiaDaSemana diaDaSemana, LocalDateTime horaInicio, int duracao) {
-        this.disciplina = disciplina;
-        this.sala = sala;
-        this.diaDaSemana = diaDaSemana;
-        this.horaInicio = horaInicio;
-        this.duracao = duracao;
+    public Lecture(Subject subject, Room room, DayOfWeek dayOfWeek, LocalTime hourInit, Duration duration) {
+        this.subject = subject;
+        this.room = room;
+        this.dayOfWeek = dayOfWeek;
+        this.hourInit = hourInit;
+        this.duration = duration;
     }
 
-	public UUID getId() {
-		return id;
-	}
+    public UUID getId() {
+        return id;
+    }
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
+    public Subject getSubject() {
+        return subject;
+    }
 
-	public Disciplina getDisciplina() {
-		return disciplina;
-	}
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
 
-	public void setDisciplina(Disciplina disciplina) {
-		this.disciplina = disciplina;
-	}
+    public Room getRoom() {
+        return room;
+    }
 
-	public Sala getSala() {
-		return sala;
-	}
+    public void setRoom(Room room) {
+        this.room = room;
+    }
 
-	public void setSala(Sala sala) {
-		this.sala = sala;
-	}
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
 
-	public DiaDaSemana getDiaDaSemana() {
-		return diaDaSemana;
-	}
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
 
-	public void setDiaDaSemana(DiaDaSemana diaDaSemana) {
-		this.diaDaSemana = diaDaSemana;
-	}
+    public LocalTime getHourInit() {
+        return hourInit;
+    }
 
-	public LocalDateTime getHoraInicio() {
-		return horaInicio;
-	}
+    public void setHourInit(LocalTime hourInit) {
+        this.hourInit = hourInit;
+    }
 
-	public void setHoraInicio(LocalDateTime horaInicio) {
-		this.horaInicio = horaInicio;
-	}
+    public Duration getDuration() {
+        return duration;
+    }
 
-	public int getDuracao() {
-		return duracao;
-	}
-
-	public void setDuracao(int duracao) {
-		this.duracao = duracao;
-	}
-    
-    
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
 }

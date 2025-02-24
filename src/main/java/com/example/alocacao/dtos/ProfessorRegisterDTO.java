@@ -4,11 +4,13 @@ public class ProfessorRegisterDTO {
     private String name;
     private String email;
     private String password;
+    private boolean isAdmin;
     
-    public ProfessorRegisterDTO(String name, String email, String password) {
+    public ProfessorRegisterDTO(String name, String email, String password, boolean isAdmin) {
         this.setName(name);
         this.setEmail(email);
         this.setPassword(password);
+        this.setAdmin(isAdmin);
     }
 
 	public String getPassword() {
@@ -33,5 +35,13 @@ public class ProfessorRegisterDTO {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean getIsAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }
