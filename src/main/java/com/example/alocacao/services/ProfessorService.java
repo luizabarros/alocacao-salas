@@ -1,5 +1,8 @@
 package com.example.alocacao.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,5 +63,12 @@ public class ProfessorService {
         String token = jwtUtil.generateToken(loginDTO.getEmail());
 
         return new TokenDTO(token);
+    }
+    
+    public List<ProfessorDTO> getAllProfessors() {
+        List<Professor> professors = professorRepository.findAll();
+        return professors.stream()
+                .map(professor -> new ProfessorDTO(professor.getId(), professor.getName(), professor.getEmail(), professor.isConfirmed()))
+                .collect(Collectors.toList());
     }
 }
