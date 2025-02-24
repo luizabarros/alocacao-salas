@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.alocacao.dtos.AulaDTO;
@@ -19,17 +20,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/aulas")
-@Tag(name = "Aulas", description = "Gerenciamento das alocações de aulas") // Grupo no Swagger UI
+@Tag(name = "Aulas", description = "Gerenciamento das alocações de aulas") 
 public class AulaController {
 
     @Autowired
     private AulaService aulaService;
 
+    @Secured("ROLE_PROFESSOR") 
     @PostMapping
-    @Operation(summary = "Criar uma nova aula", description = "Aloca uma aula para uma sala e horário específicos, respeitando o intervalo de 50 minutos.")
+    @Operation(summary = "Criar uma nova aula", description = "Apenas professores podem alocar salas e horários para aulas.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Aula criada com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Horário indisponível"),
+        @ApiResponse(responseCode = "400", description = "Horário indisponível ou inválido"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado"),
         @ApiResponse(responseCode = "500", description = "Erro interno")
     })
     public ResponseEntity<?> criarAula(@RequestBody AulaDTO aulaDTO) {
@@ -59,6 +62,7 @@ public class AulaController {
         return ResponseEntity.ok(aulaService.buscarPorId(id));
     }
 
+    @Secured("ROLE_PROFESSOR") 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar uma aula", description = "Atualiza os dados de uma aula existente, respeitando a regra dos 50 minutos.")
     @ApiResponses(value = {
@@ -71,7 +75,7 @@ public class AulaController {
         try {
             Optional<Aula> aulaAtualizada = aulaService.atualizarAula(id, aulaDTO);
             if (aulaAtualizada.isPresent()) {
-                return ResponseEntity.ok(aulaAtualizada.get()); // Retorna a aula atualizada
+                return ResponseEntity.ok(aulaAtualizada.get());
             } else {
                 return ResponseEntity.status(404).body("Aula não encontrada");
             }
@@ -80,7 +84,7 @@ public class AulaController {
         }
     }
 
-
+    @Secured("ROLE_PROFESSOR") 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deletar uma aula", description = "Remove uma aula do sistema pelo ID.")
     @ApiResponses(value = {

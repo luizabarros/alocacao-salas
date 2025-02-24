@@ -1,5 +1,7 @@
 package com.example.alocacao.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.alocacao.dtos.LoginDTO;
 import com.example.alocacao.dtos.ProfessorDTO;
 import com.example.alocacao.dtos.ProfessorRegisterDTO;
+import com.example.alocacao.dtos.RoleDTO;
 import com.example.alocacao.dtos.TokenDTO;
 import com.example.alocacao.entities.Professor;
+import com.example.alocacao.entities.Role;
 import com.example.alocacao.messaging.EmailProducer;
 import com.example.alocacao.repositories.ProfessorRepository;
+import com.example.alocacao.repositories.RoleRepository; 
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +32,9 @@ public class ProfessorService {
 
     @Autowired
     private ProfessorRepository professorRepository;
+
+    @Autowired
+    private RoleRepository roleRepository; 
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -49,18 +57,33 @@ public class ProfessorService {
         String encryptedPassword = passwordEncoder.encode(professorRegisterDTO.getPassword());
 
         Professor professor = new Professor();
-        professor.setName(professorRegisterDTO.getName());
+        professor.setNome(professorRegisterDTO.getName());
         professor.setEmail(professorRegisterDTO.getEmail());
-        professor.setPassword(encryptedPassword);
+        professor.setSenha(encryptedPassword); 
         professor.setConfirmed(false);
+
+        Role roleProfessor = roleRepository.findByRole("ROLE_PROFESSOR")
+            .orElseGet(() -> {
+                Role newRole = new Role();
+                newRole.setRole("ROLE_PROFESSOR");
+                return roleRepository.save(newRole);
+            });
+
+        professor.setRoles(List.of(roleProfessor));
 
         Professor savedProfessor = professorRepository.save(professor);
 
-        emailProducer.sendEmail(savedProfessor.getEmail());
-        savedProfessor.setConfirmed(true);
-
-        return new ProfessorDTO(savedProfessor.getId(), savedProfessor.getName(), savedProfessor.getEmail(), savedProfessor.isConfirmed());
+        return new ProfessorDTO(
+            savedProfessor.getId(),
+            savedProfessor.getNome(),
+            savedProfessor.getEmail(),
+            savedProfessor.isConfirmed(),
+            savedProfessor.getRoles().stream()
+                .map(role -> new RoleDTO(role.getId(), role.getRole()))
+                .toList()
+        );
     }
+
 
     @Operation(summary = "Autenticar um professor", description = "Realiza o login de um professor e retorna um token JWT.")
     @ApiResponses(value = {
@@ -68,16 +91,29 @@ public class ProfessorService {
         @ApiResponse(responseCode = "400", description = "E-mail ou senha incorretos"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
+    
     public TokenDTO login(LoginDTO loginDTO) {
-        Professor professor = professorRepository.findByEmail(loginDTO.getEmail())
-                .orElseThrow(() -> new RuntimeException("Professor não encontrado"));
+        System.out.println("📩 Recebendo tentativa de login para: " + loginDTO.getEmail());
 
-        if (!passwordEncoder.matches(loginDTO.getPassword(), professor.getPassword())) {
+        Professor professor = professorRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> {
+                    System.out.println("❌ Usuário não encontrado: " + loginDTO.getEmail());
+                    return new RuntimeException("Professor não encontrado");
+                });
+
+        System.out.println("✅ Professor encontrado: " + professor.getEmail());
+
+        boolean senhaCorreta = passwordEncoder.matches(loginDTO.getPassword(), professor.getSenha());
+        System.out.println("🔑 Senha correta? " + senhaCorreta);
+
+        if (!senhaCorreta) {
             throw new RuntimeException("Senha incorreta");
         }
 
         String token = jwtUtil.generateToken(loginDTO.getEmail());
+        System.out.println("🎟 Token gerado: " + token);
 
         return new TokenDTO(token);
     }
+
 }

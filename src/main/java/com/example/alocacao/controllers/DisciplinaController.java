@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.alocacao.dtos.DisciplinaDTO;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/disciplinas")
+@Secured("ROLE_PROFESSOR")
 @Tag(name = "Disciplinas", description = "Gerenciamento das disciplinas") // Grupo no Swagger UI
 public class DisciplinaController {
 

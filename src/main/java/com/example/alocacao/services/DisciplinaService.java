@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.alocacao.dtos.DisciplinaDTO;
 import com.example.alocacao.dtos.ProfessorDTO;
+import com.example.alocacao.dtos.RoleDTO;
 import com.example.alocacao.entities.Disciplina;
 import com.example.alocacao.entities.Professor;
 import com.example.alocacao.repositories.DisciplinaRepository;
@@ -21,7 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Service
-@Tag(name = "Disciplinas", description = "Serviço para gerenciamento de disciplinas") // Grupo no Swagger
+@Tag(name = "Disciplinas", description = "Serviço para gerenciamento de disciplinas")
 public class DisciplinaService {
 
     @Autowired
@@ -126,19 +127,28 @@ public class DisciplinaService {
         ProfessorDTO professorDTO = null;
 
         if (disciplina.getProfessor() != null) {
+            List<RoleDTO> rolesDTO = disciplina.getProfessor().getRoles() != null
+                    ? disciplina.getProfessor().getRoles().stream()
+                          .map(role -> new RoleDTO(role.getId(), role.getRole())) 
+                          .toList()
+                    : List.of(); 
+
             professorDTO = new ProfessorDTO(
                 disciplina.getProfessor().getId(),
-                disciplina.getProfessor().getName(),
+                disciplina.getProfessor().getNome(),
                 disciplina.getProfessor().getEmail(),
-                disciplina.getProfessor().isConfirmed()
+                disciplina.getProfessor().isConfirmed(),
+                rolesDTO
             );
         }
 
         return new DisciplinaDTO(
-        	disciplina.getId(),
+            disciplina.getId(),
             disciplina.getNome(),
             disciplina.getCodigoTurma(),
             professorDTO
         );
     }
+
+
 }

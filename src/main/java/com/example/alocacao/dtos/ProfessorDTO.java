@@ -1,49 +1,69 @@
 package com.example.alocacao.dtos;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ProfessorDTO {
     private UUID id;
-    private String name;
+    private String nome;
     private String email;
     private boolean confirmed;
+    private List<RoleDTO> roles;
 
-    public ProfessorDTO(UUID id, String name, String email, boolean confirmed) {
-        this.setId(id);
-        this.setName(name);
-        this.setEmail(email);
-        this.setConfirmed(confirmed);
+    public ProfessorDTO(UUID id, String nome, String email, String senha, boolean confirmed, List<RoleDTO> roles) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.confirmed = confirmed;
+        this.roles = roles;
     }
 
-	public String getName() {
-		return name;
-	}
+    public ProfessorDTO(UUID id, String nome, String email, boolean confirmed, List<RoleDTO> roles) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.confirmed = confirmed;
+        this.roles = roles;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public UUID getId() {
+        return id;
+    }
 
-	public boolean isConfirmed() {
-		return confirmed;
-	}
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-	public void setConfirmed(boolean confirmed) {
-		this.confirmed = confirmed;
-	}
+    public String getNome() {
+        return nome;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public UUID getId() {
-		return id;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
+    public List<RoleDTO> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleDTO> roles) {
+        this.roles = roles;
+    }
 }
+
