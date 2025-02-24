@@ -16,16 +16,18 @@ public class DisciplinaDTO {
     private String codigoTurma;
 
     @Schema(description = "Professor associado à disciplina (opcional)")
-    private ProfessorDTO professor; 
+    private UUID professorId; 
     
 //    public DisciplinaDTO() {}
     	
-    public DisciplinaDTO(UUID id, String nome, String codigoTurma, ProfessorDTO professor) {
+    public DisciplinaDTO(UUID id, String nome, String codigoTurma, UUID professorId) {
         this.id = id;
         this.nome = nome;
         this.codigoTurma = codigoTurma;
-        this.professor = professor;
+        this.professorId = professorId; 
     }
+
+
 
 	public UUID getId() {
 		return id;
@@ -51,14 +53,13 @@ public class DisciplinaDTO {
 		this.codigoTurma = codigoTurma;
 	}
 
-	public ProfessorDTO getProfessor() {
-		return professor;
+	public UUID getProfessorId() {
+		return professorId;
 	}
 
-	public void setProfessor(ProfessorDTO professor) {
-		this.professor = professor;
+	public void setProfessorId(UUID professorId) {
+		this.professorId = professorId;
 	}
-    
-    
 
+    
 }
