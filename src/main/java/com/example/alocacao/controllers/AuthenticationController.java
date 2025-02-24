@@ -28,7 +28,7 @@ public class AuthenticationController {
         		data.login(),  
         		data.password()   
         );
-
+        
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         Professor professor = (Professor) authentication.getPrincipal();
         

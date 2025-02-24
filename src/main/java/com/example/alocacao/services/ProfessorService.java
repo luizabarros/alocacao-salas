@@ -103,16 +103,18 @@ public class ProfessorService {
                 .orElseThrow(() -> {
                     return new RuntimeException("Professor não encontrado");
                 });
-
+        
         boolean correctPassword = passwordEncoder.matches(loginDTO.getPassword(), professor.getProfessorPassword());
 
         if (!correctPassword) {
             throw new RuntimeException("Senha incorreta");
         }
+        
 
         String token = jwtUtil.generateToken(loginDTO.getEmail());
+        
         boolean isAdmin = professor.getIsAdmin();
-
+        
         return new TokenDTO(token, isAdmin);
     }
     
