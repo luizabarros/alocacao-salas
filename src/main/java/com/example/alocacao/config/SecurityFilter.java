@@ -39,7 +39,6 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         String requestPath = request.getServletPath();
 
-        // Permite acesso ao login e ao registro de professores
         if (requestPath.equals("/login") || requestPath.contains("/professor/public/")) {
             System.out.println("✅ Acesso permitido sem autenticação para: " + requestPath);
             filterChain.doFilter(request, response);

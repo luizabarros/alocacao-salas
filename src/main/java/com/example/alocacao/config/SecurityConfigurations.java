@@ -1,4 +1,4 @@
-	package com.example.alocacao.config;
+package com.example.alocacao.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ public class SecurityConfigurations {
                     "/webjars/**"
                 ).permitAll();
 
-                req.requestMatchers("/professor/public/**", "/login").permitAll(); // ✅ Deve estar assim
+                req.requestMatchers("/professor/public/**", "/login").permitAll(); 
 
                 req.anyRequest().authenticated();
             })

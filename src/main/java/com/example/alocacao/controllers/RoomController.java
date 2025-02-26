@@ -20,13 +20,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/rooms")
-@Secured("ROLE_PROFESSOR")
 @Tag(name = "Salas", description = "Gerenciamento das salas disponíveis")
 public class RoomController {
 
     @Autowired
     private RoomService roomService;
 
+    @Secured("ROLE_PROFESSOR") 
     @PostMapping
     @Operation(summary = "Criar uma nova sala", description = "Cria uma nova sala informando o nome.")
     @ApiResponses(value = {
@@ -57,6 +57,7 @@ public class RoomController {
         return ResponseEntity.ok(roomService.getRoomById(id));
     }
 
+    @Secured("ROLE_PROFESSOR") 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar uma sala", description = "Atualiza os dados de uma sala existente, informando o ID e os novos valores.")
     @ApiResponses(value = {
@@ -69,6 +70,7 @@ public class RoomController {
         return ResponseEntity.ok(roomService.updateRoom(id, roomDTO));
     }
 
+    @Secured("ROLE_PROFESSOR") 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deletar uma sala", description = "Remove uma sala do sistema pelo ID.")
     @ApiResponses(value = {

@@ -14,6 +14,7 @@ import com.example.alocacao.services.JWTService;
 
 @RestController
 @RequestMapping("/login")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthenticationController {
 
     @Autowired
