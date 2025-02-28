@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,12 @@ public class ProfessorService {
 
     @Autowired
     private JWTService jwtUtil;
+    
+    @Autowired
+    private AuthenticationManager authenticationManager; 
+
+    @Autowired
+    private JWTService jwtService;
 
     @Autowired
     private ProfessorRepository professorRepository;
@@ -98,23 +107,22 @@ public class ProfessorService {
         @ApiResponse(responseCode = "400", description = "E-mail ou senha incorretos"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
+
     public TokenDTO login(LoginDTO loginDTO) {
-        Professor professor = professorRepository.findByEmail(loginDTO.getEmail())
-                .orElseThrow(() -> {
-                    return new RuntimeException("Professor não encontrado");
-                });
-        
-        boolean correctPassword = passwordEncoder.matches(loginDTO.getPassword(), professor.getProfessorPassword());
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                loginDTO.getEmail(), 
+                loginDTO.getPassword()
+            )
+        );
 
-        if (!correctPassword) {
-            throw new RuntimeException("Senha incorreta");
-        }
-        
+        Professor professor = (Professor) authentication.getPrincipal();
 
-        String token = jwtUtil.generateToken(loginDTO.getEmail());
-        
+        System.out.println("🔍 ProfessorService - Usuário autenticado com sucesso!");
+
+        String token = jwtService.generateToken(professor.getEmail());
         boolean isAdmin = professor.getIsAdmin();
-        
+
         return new TokenDTO(token, isAdmin);
     }
     

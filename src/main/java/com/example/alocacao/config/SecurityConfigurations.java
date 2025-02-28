@@ -28,12 +28,11 @@ public class SecurityConfigurations {
     }
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(csrf -> csrf.disable()) 
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(req -> {
-
                 req.requestMatchers(
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
@@ -42,11 +41,10 @@ public class SecurityConfigurations {
                     "/webjars/**"
                 ).permitAll();
 
-                req.requestMatchers("/professor/public/**", "/login").permitAll(); 
-
+                req.requestMatchers("/register", "/login", "/professor/public/**").permitAll();
                 req.anyRequest().authenticated();
             })
-            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class) 
             .build();
     }
 
