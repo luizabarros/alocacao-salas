@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/disciplinas")
-@Secured("ROLE_PROFESSOR")
 @Tag(name = "Disciplinas", description = "Gerenciamento das disciplinas")
 public class SubjectController {
 
@@ -28,6 +27,7 @@ public class SubjectController {
     private SubjectService subjectService;
 
     @PostMapping
+    @Secured("ROLE_PROFESSOR")
     @Operation(summary = "Criar uma nova disciplina", description = "Cadastra uma disciplina identificada pelo nome e código da turma, com professor opcional.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Disciplina criada com sucesso"),
@@ -44,6 +44,7 @@ public class SubjectController {
     }
 
     @PutMapping("/{id}/professor/{professorId}")
+    @Secured("ROLE_PROFESSOR")
     @Operation(summary = "Atualizar ou adicionar um professor à disciplina", description = "Permite associar ou modificar um professor de uma disciplina.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Professor atualizado com sucesso"),
@@ -84,6 +85,7 @@ public class SubjectController {
     }
 
     @PutMapping("/{id}")
+    @Secured("ROLE_PROFESSOR")
     @Operation(summary = "Atualizar uma disciplina", description = "Atualiza os dados de uma disciplina existente, informando o ID e os novos valores.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Disciplina atualizada com sucesso"),
@@ -101,6 +103,7 @@ public class SubjectController {
     }
 
     @DeleteMapping("/{id}")
+    @Secured("ROLE_PROFESSOR")
     @Operation(summary = "Deletar uma disciplina", description = "Remove uma disciplina do sistema pelo ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Disciplina deletada com sucesso"),

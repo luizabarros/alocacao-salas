@@ -1,5 +1,6 @@
 package com.example.alocacao.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.alocacao.dtos.LectureDTO;
+import com.example.alocacao.entities.DayOfWeek;
 import com.example.alocacao.entities.Lecture;
 import com.example.alocacao.services.LectureService;
 
@@ -99,5 +101,14 @@ public class LectureController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }
+    }
+    
+    @GetMapping("/dayOfWeek")
+    @Operation(summary = "Lista todos os dias da semana", description = "Retorna uma lista com todos os dias da semana conforme a enumeração DayOfWeek.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso"),
+    })
+    public ResponseEntity<List<DayOfWeek>> getDaysOfWeek() {
+        return ResponseEntity.ok(Arrays.asList(DayOfWeek.values()));
     }
 }

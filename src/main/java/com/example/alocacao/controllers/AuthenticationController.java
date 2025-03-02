@@ -21,7 +21,6 @@ import com.example.alocacao.services.ProfessorService;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AuthenticationController {
 
-	// tirar, só para os prints de comparacao
     @Autowired
     private PasswordEncoder passwordEncoder;
     

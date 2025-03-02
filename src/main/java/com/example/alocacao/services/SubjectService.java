@@ -141,6 +141,12 @@ public class SubjectService {
         return false;
     }
 
+    @Operation(summary = "Converte uma entidade Subject para DTO", 
+            description = "Este método converte um objeto Subject para SubjectDTO, garantindo que os dados estejam estruturados corretamente.")
+    @ApiResponses(value = {
+    		@ApiResponse(responseCode = "200", description = "Conversão bem-sucedida"),
+    		@ApiResponse(responseCode = "400", description = "Erro na conversão da entidade")
+    })
     private SubjectDTO convertToDTO(Subject subject) {
         UUID professorId = (subject.getProfessor() != null) ? subject.getProfessor().getId() : null;
 

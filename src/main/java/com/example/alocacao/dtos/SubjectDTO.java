@@ -12,7 +12,7 @@ public class SubjectDTO {
     @Schema(description = "Nome da disciplina", example = "Matemática")
     private String name; 
 
-    @Schema(description = "Código da turma", example = "MAT101")
+    @Schema(description = "Código da turma", example = "T1")
     private String codClass; 
 
     @Schema(description = "Identificador do professor associado à disciplina (opcional)", example = "550e8400-e29b-41d4-a716-446655440000")

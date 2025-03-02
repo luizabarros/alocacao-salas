@@ -77,6 +77,12 @@ public class RoomService {
         roomRepository.deleteById(id);
     }
 
+    @Operation(summary = "Converte uma entidade Room para DTO", 
+            description = "Este método converte um objeto Room para RoomDTO, garantindo que os dados estejam estruturados corretamente.")
+    @ApiResponses(value = {
+    		@ApiResponse(responseCode = "200", description = "Conversão bem-sucedida"),
+    		@ApiResponse(responseCode = "400", description = "Erro na conversão da entidade")
+    })
     private RoomDTO convertToDTO(Room room) {
         return new RoomDTO(room.getId(), room.getName());
     }

@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import com.example.alocacao.dtos.LectureDTO;
 import com.example.alocacao.entities.Lecture;
 import com.example.alocacao.entities.Room;
+import com.example.alocacao.entities.Subject;
 import com.example.alocacao.repositories.LectureRepository;
 import com.example.alocacao.repositories.RoomRepository;
+import com.example.alocacao.repositories.SubjectRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +32,9 @@ public class LectureService {
 
     @Autowired
     private RoomRepository roomRepository;
+    
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     @Operation(summary = "Criar uma nova aula", description = "Cadastra uma aula respeitando a disponibilidade da sala e os intervalos de 50 minutos.")
     @ApiResponses(value = {
@@ -38,8 +43,12 @@ public class LectureService {
         @ApiResponse(responseCode = "500", description = "Erro interno")
     })
     public Lecture saveLecture(LectureDTO lectureDTO) {
+
         Room room = roomRepository.findById(lectureDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Sala não encontrada!"));
+
+        Subject subject = subjectRepository.findById(lectureDTO.getSubjectId())
+                .orElseThrow(() -> new IllegalArgumentException("Disciplina não encontrada!"));
 
         LocalTime hourInitLecture = lectureDTO.getHourInit();
         LocalTime hourEndLecture = hourInitLecture.plus(lectureDTO.getDuration());
@@ -55,9 +64,12 @@ public class LectureService {
         lecture.setHourInit(hourInitLecture);
         lecture.setDuration(lectureDTO.getDuration());
         lecture.setRoom(room);
+        lecture.setSubject(subject); 
+        lecture.setDayOfWeek(lectureDTO.getDayOfWeek());
 
         return lectureRepository.save(lecture);
     }
+
 
     @Operation(summary = "Listar todas as aulas", description = "Retorna uma lista com todas as aulas cadastradas no sistema.")
     @ApiResponse(responseCode = "200", description = "Lista de aulas retornada com sucesso")
@@ -84,27 +96,40 @@ public class LectureService {
         @ApiResponse(responseCode = "404", description = "Aula não encontrada"),
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Optional<Lecture> updateLecture(UUID id, LectureDTO newLectureDTO) {
-        return lectureRepository.findById(id).map(lecture -> {
+    public Optional<Lecture> updateLecture(UUID id, LectureDTO lectureDTO) {
+        Optional<Lecture> existingLectureOpt = lectureRepository.findById(id);
+        
+        if (existingLectureOpt.isEmpty()) {
+            throw new IllegalArgumentException("Aula não encontrada!");
+        }
 
-            LocalTime newHourInit = newLectureDTO.getHourInit();
-            LocalTime newHourEnd = newHourInit.plus(newLectureDTO.getDuration());
+        Lecture existingLecture = existingLectureOpt.get();
 
-            boolean existsConflict = lectureRepository.existsByRoomIdAndHourInitBetween(
-            		newLectureDTO.getRoomId(), newHourInit.minusMinutes(49), newHourEnd);
+        lectureRepository.delete(existingLecture);
 
-            if (existsConflict) {
-                throw new IllegalArgumentException("A sala já está ocupada nesse horário.");
-            }
+        Room room = roomRepository.findById(lectureDTO.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("Sala não encontrada!"));
+        Subject subject = subjectRepository.findById(lectureDTO.getSubjectId())
+                .orElseThrow(() -> new IllegalArgumentException("Disciplina não encontrada!"));
 
-            lecture.setHourInit(newHourInit);
-            lecture.setDuration(newLectureDTO.getDuration());
-            lecture.setDayOfWeek(newLectureDTO.getDayOfWeek());
+        LocalTime hourInitLecture = lectureDTO.getHourInit();
+        LocalTime hourEndLecture = hourInitLecture.plus(lectureDTO.getDuration());
 
-            roomRepository.findById(newLectureDTO.getRoomId()).ifPresent(lecture::setRoom);
+        boolean existsConflict = lectureRepository.existsByRoomIdAndHourInit(lectureDTO.getRoomId(), hourInitLecture) ||
+                lectureRepository.existsByRoomIdAndHourInitBetween(lectureDTO.getRoomId(), hourInitLecture.minusMinutes(49), hourEndLecture);
 
-            return lectureRepository.save(lecture);
-        });
+        if (existsConflict) {
+            throw new IllegalArgumentException("A sala já está ocupada nesse horário.");
+        }
+
+        Lecture updatedLecture = new Lecture();
+        updatedLecture.setRoom(room);
+        updatedLecture.setSubject(subject);
+        updatedLecture.setHourInit(hourInitLecture);
+        updatedLecture.setDuration(lectureDTO.getDuration());
+        updatedLecture.setDayOfWeek(lectureDTO.getDayOfWeek());
+
+        return Optional.of(lectureRepository.save(updatedLecture));
     }
 
     @Operation(summary = "Deletar uma aula", description = "Remove uma aula do sistema pelo ID.")
@@ -120,6 +145,12 @@ public class LectureService {
         lectureRepository.deleteById(id);
     }
 
+    @Operation(summary = "Converte uma entidade Lecture para DTO", 
+            description = "Este método converte um objeto Lecture para LectureDTO, garantindo que os dados estejam estruturados corretamente.")
+    @ApiResponses(value = {
+    		@ApiResponse(responseCode = "200", description = "Conversão bem-sucedida"),
+    		@ApiResponse(responseCode = "400", description = "Erro na conversão da entidade")
+    })
     private LectureDTO convertToDTO(Lecture lecture) {
         return new LectureDTO(
             lecture.getId(),
