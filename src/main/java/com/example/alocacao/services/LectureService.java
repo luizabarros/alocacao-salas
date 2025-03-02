@@ -89,6 +89,7 @@ public class LectureService {
         return lectureRepository.findById(id).map(this::convertToDTO);
     }
 
+
     @Operation(summary = "Atualizar uma aula", description = "Atualiza os dados de uma aula existente, verificando se a nova alocação respeita os intervalos de 50 minutos.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Aula atualizada com sucesso"),
@@ -105,8 +106,15 @@ public class LectureService {
 
         Lecture existingLecture = existingLectureOpt.get();
 
+        Lecture backupLecture = new Lecture();
+        backupLecture.setRoom(existingLecture.getRoom());
+        backupLecture.setSubject(existingLecture.getSubject());
+        backupLecture.setHourInit(existingLecture.getHourInit());
+        backupLecture.setDuration(existingLecture.getDuration());
+        backupLecture.setDayOfWeek(existingLecture.getDayOfWeek());
+        
         lectureRepository.delete(existingLecture);
-
+        
         Room room = roomRepository.findById(lectureDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Sala não encontrada!"));
         Subject subject = subjectRepository.findById(lectureDTO.getSubjectId())
@@ -119,7 +127,9 @@ public class LectureService {
                 lectureRepository.existsByRoomIdAndHourInitBetween(lectureDTO.getRoomId(), hourInitLecture.minusMinutes(49), hourEndLecture);
 
         if (existsConflict) {
+            lectureRepository.save(backupLecture);
             throw new IllegalArgumentException("A sala já está ocupada nesse horário.");
+       	
         }
 
         Lecture updatedLecture = new Lecture();
@@ -128,8 +138,8 @@ public class LectureService {
         updatedLecture.setHourInit(hourInitLecture);
         updatedLecture.setDuration(lectureDTO.getDuration());
         updatedLecture.setDayOfWeek(lectureDTO.getDayOfWeek());
-
-        return Optional.of(lectureRepository.save(updatedLecture));
+             
+        	return Optional.of(lectureRepository.save(updatedLecture));
     }
 
     @Operation(summary = "Deletar uma aula", description = "Remove uma aula do sistema pelo ID.")
@@ -161,4 +171,4 @@ public class LectureService {
             lecture.getDuration()
         );
     }
-} 
+}  
