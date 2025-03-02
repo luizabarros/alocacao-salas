@@ -53,11 +53,23 @@ public class LectureService {
         LocalTime hourInitLecture = lectureDTO.getHourInit();
         LocalTime hourEndLecture = hourInitLecture.plus(lectureDTO.getDuration());
 
-        boolean existsConflict = lectureRepository.existsByRoomIdAndHourInitBetween(
-                lectureDTO.getRoomId(), hourInitLecture.minusMinutes(49), hourEndLecture);
+        // 🔥 Verifica se já existe uma aula na mesma sala, horário, dia e duração (considerando 49 minutos de intervalo)
+        boolean existsConflict = lectureRepository.existsByRoomIdAndDayOfWeekAndHourInitAndDuration(
+                    lectureDTO.getRoomId(), 
+                    lectureDTO.getDayOfWeek(), 
+                    hourInitLecture, 
+                    lectureDTO.getDuration()
+                ) ||
+                lectureRepository.existsByRoomIdAndDayOfWeekAndHourInitBetweenAndDuration(
+                    lectureDTO.getRoomId(), 
+                    lectureDTO.getDayOfWeek(), 
+                    hourInitLecture.minusMinutes(49), 
+                    hourEndLecture, 
+                    lectureDTO.getDuration()
+                );
 
         if (existsConflict) {
-            throw new IllegalArgumentException("A sala já está ocupada nesse horário.");
+            throw new IllegalArgumentException("A sala já está ocupada nesse horário, dia e duração.");
         }
 
         Lecture lecture = new Lecture();
@@ -69,7 +81,6 @@ public class LectureService {
 
         return lectureRepository.save(lecture);
     }
-
 
     @Operation(summary = "Listar todas as aulas", description = "Retorna uma lista com todas as aulas cadastradas no sistema.")
     @ApiResponse(responseCode = "200", description = "Lista de aulas retornada com sucesso")

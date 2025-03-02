@@ -1,5 +1,6 @@
 package com.example.alocacao.repositories;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -33,5 +34,11 @@ public interface LectureRepository extends JpaRepository<Lecture, UUID> {
 		        @Param("hourInit") LocalTime hourInit,
 		        @Param("hourEnd") LocalTime hourEnd,
 		        @Param("lectureId") UUID lectureId);
+
+	boolean existsByRoomIdAndDayOfWeekAndHourInitBetweenAndDuration(UUID roomId, DayOfWeek dayOfWeek,
+			LocalTime minusMinutes, LocalTime hourEndLecture, Duration duration);
+
+	boolean existsByRoomIdAndDayOfWeekAndHourInitAndDuration(UUID roomId, DayOfWeek dayOfWeek,
+			LocalTime hourInitLecture, Duration duration);
 
 }
