@@ -1,4 +1,4 @@
-'version: '3.8'
+version: '3.8'
 services:
   db:
     image: postgres:14.1-alpine
@@ -29,4 +29,4 @@ volumes:
   db:
     driver: local
   rabbitmq:
-    driver: local'
+    driver: local
