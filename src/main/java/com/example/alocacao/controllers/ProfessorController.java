@@ -1,6 +1,7 @@
 package com.example.alocacao.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,9 +21,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/professor")
-@Tag(name = "Professores", description = "Gerenciamento de professores e autenticação") 
+@Tag(name = "Professores", description = "Gerenciamento de professores e autenticação")
 public class ProfessorController {
-    
+
     @Autowired
     private ProfessorService professorService;
 
@@ -48,7 +49,7 @@ public class ProfessorController {
     public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO loginRequest) {
         return ResponseEntity.ok(professorService.login(loginRequest));
     }
-    
+
     @GetMapping("/private/all")
     @Operation(summary = "Listar professor", description = "Lista professores.")
     @ApiResponses(value = {
@@ -59,5 +60,32 @@ public class ProfessorController {
     public ResponseEntity<List<ProfessorDTO>> getAllProfessors() {
         List<ProfessorDTO> professors = professorService.getAllProfessors();
         return ResponseEntity.ok(professors);
+    }
+
+    @PutMapping("/private/all/{id}")
+    @Operation(summary = "Atualizar um professor", description = "Atualiza as informações de um professor existente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Professor atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Professor não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
+        @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
+    public ResponseEntity<ProfessorDTO> update(@PathVariable UUID id, @RequestBody ProfessorRegisterDTO professorRegisterDTO) {
+        ProfessorDTO updatedProfessor = professorService.update(id, professorRegisterDTO);
+        return ResponseEntity.ok(updatedProfessor);
+    }
+
+    @DeleteMapping("/private/all/{id}")
+    @Operation(summary = "Excluir um professor", description = "Exclui um professor existente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Professor excluído com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Professor não encontrado"),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
+        @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        professorService.delete(id);
+        return ResponseEntity.ok().build();
     }
 }

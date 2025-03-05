@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/disciplinas")
+@RequestMapping("/subjects")
 @Tag(name = "Disciplinas", description = "Gerenciamento das disciplinas")
 public class SubjectController {
 
