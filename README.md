@@ -7,7 +7,7 @@ Você ira encontar um arquivo .env.example com as chaves que você irá precisar
 ![image](https://github.com/user-attachments/assets/3840bdff-f395-4be5-828f-26e4d7c8f864)  <br/>
 
 2. Defina suas informações no application properties <br/>
-# Em caso de erro na chave do sendgrid, é recomendado criar outra na plataforma do sendgrid. Adicione no application properties. <br/>
+Em caso de erro na chave do sendgrid, é recomendado criar outra na plataforma do sendgrid. Adicione no application properties. <br/>
 
 3. Para executar o container use o comando: docker-compose up -d <br/>
 
