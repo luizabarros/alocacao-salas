@@ -19,3 +19,7 @@ Acesso ao POSTGRES usando Dbeaver: <br/>
 
 # Acesso o Swagger <br/>
 http://localhost:8080/swagger-ui/index.html
+
+# Login padrão (admin): <br/>
+20231160027@ifba.edu.br
+Admin@123
