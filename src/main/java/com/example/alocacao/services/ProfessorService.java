@@ -1,6 +1,7 @@
 package com.example.alocacao.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,5 +139,53 @@ public class ProfessorService {
                 .map(professor -> new ProfessorDTO(professor.getId(), professor.getName(), professor.getEmail(), professor.isConfirmed(), professor.getIsAdmin(), null))
                 .collect(Collectors.toList());
     }
+    
+    @Operation(summary = "Atualizar um professor", description = "Atualiza as informações de um professor existente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Professor atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Professor não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+        @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
+    @Transactional
+    public ProfessorDTO update(UUID id, ProfessorRegisterDTO professorRegisterDTO) {
+        Professor professor = professorRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Professor não encontrado."));
+        
+        professor.setName(professorRegisterDTO.getName());
+        professor.setEmail(professorRegisterDTO.getEmail());
+        professor.setIsAdmin(professorRegisterDTO.getIsAdmin());
 
+        if (professorRegisterDTO.getPassword() != null && !professorRegisterDTO.getPassword().isEmpty()) {
+            String encryptedPassword = passwordEncoder.encode(professorRegisterDTO.getPassword());
+            professor.setProfessorPassword(encryptedPassword);
+        }
+
+        Professor updatedProfessor = professorRepository.save(professor);
+
+        return new ProfessorDTO(
+            updatedProfessor.getId(),
+            updatedProfessor.getName(),
+            updatedProfessor.getEmail(),
+            updatedProfessor.getIsAdmin(),
+            updatedProfessor.isConfirmed(),
+            updatedProfessor.getRoles().stream()
+                .map(role -> new RoleDTO(role.getId(), role.getRole()))
+                .toList()
+        );
+    }
+    
+    @Operation(summary = "Excluir um professor", description = "Exclui um professor existente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Professor excluído com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Professor não encontrado"),
+        @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
+    @Transactional
+    public void delete(UUID id) {
+        Professor professor = professorRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Professor não encontrado."));
+
+        professorRepository.delete(professor);
+    }
 }

@@ -11,4 +11,5 @@ import com.example.alocacao.entities.Professor;
 @Repository
 public interface ProfessorRepository extends JpaRepository<Professor, UUID> {
     Optional<Professor> findByEmail(String email);
+    Optional<Professor> findById(UUID id);
 }
