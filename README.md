@@ -16,7 +16,7 @@ Acesso ao POSTGRES usando Dbeaver: <br/>
 ![image](https://github.com/user-attachments/assets/369b4414-9c68-4904-a68d-48f015fe0dff)
 
 # Banco de Dados - Modelagem <br/>
-![image](https://github.com/user-attachments/assets/380cafc0-a16f-4c78-adae-b1f971e1308d)
+![image](https://github.com/user-attachments/assets/ef7f6792-bb7c-4a8f-82d2-18d4a36caf1f)
 
 # Acesso o Swagger <br/>
 http://localhost:8080/swagger-ui/index.html
